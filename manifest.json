@@ -1,0 +1,14 @@
+{
+"manifest_version": 2,
+"name": "Best Price",
+"version": "1.0",
+"description": "Best Price Extension!",
+"icon": {
+    "logo": "logo.png"
+},
+
+"browser_action": {
+    "default_icon": "logo.png",
+    "default_popup": "logo.png"
+ }
+}
