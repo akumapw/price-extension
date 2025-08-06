@@ -10,5 +10,13 @@
 "browser_action": {
     "default_icon": "logo.png",
     "default_popup": "logo.png"
- }
+ },
+
+"background": {
+    "service_worker": "popup.js",
+    "type": "module"
+ },
+ "permissions": [
+    "storage"
+ ]
 }
