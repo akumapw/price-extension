@@ -1,16 +1,19 @@
 {
-"manifest_version": 2,
+"manifest_version": 3,
 "name": "Best Price",
 "version": "1.0",
 "description": "Best Price Extension!",
-"icon": {
-    "logo": "logo.png"
+"action": {
+    "default_popup": "popup.html"
 },
 
-"browser_action": {
-    "default_icon": "logo.png",
-    "default_popup": "logo.png"
- },
+"icons": {
+    "16": "img/icon-16.png",
+    "24": "img/icon-24.png",
+    "32": "img/icon-32.png",
+    "64": "img/icon-64.png",
+    "128": "img/icon-128.png"
+},
 
 "background": {
     "service_worker": "popup.js",
