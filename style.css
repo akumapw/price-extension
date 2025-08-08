@@ -1,7 +1,10 @@
 body {
     background-color: aliceblue;
 }
-
+#preco {
+    color: #000;
+    text-align: center;  
+}
 h2 {
     
 }
