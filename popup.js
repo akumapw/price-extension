@@ -35,3 +35,24 @@ function addOptionsToSelect(keys) {
     });
 }
 
+function createFolder(name) {
+    const trimmed = (name || '').trim();
+    if (!trimmed) return setMessage('Nome da pasta Inválido.', 'error');
+
+    chrome.storage.local.get(['folders'], (data) => {
+        const folders = data.folders || {};
+        if (folders[trimmed]) {
+            setMessage('Essa pasta já existe.', 'error');
+            return;
+        }
+        folder[trimmed] = [];
+        chrome.storage.local.set({ folders }, () => {
+            // recarrega o (select)
+            folderSelect.value = trimmed;
+            newFolderInput.value = '';
+            newFolderWrap.style.display = 'none';
+            setMessage('Pasta criada!');
+        });
+    });
+}
+
