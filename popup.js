@@ -24,3 +24,14 @@ function loadFolders() {
         }
     });
 }
+
+function addOptionsToSelect(keys) {
+    keys.sort((a,b) => a.localCompare(b, 'pt-BR'));
+    keys.forEach(k => {
+        const opt = document.createElement('option');
+        opt.value = k;
+        opt.textContent = k;
+        folderSelect.appendChild(opt);
+    });
+}
+
