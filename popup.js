@@ -8,3 +8,19 @@ const createFolderConfirm = document.getElementById('createFolderConfirm');
 const saveBtn = document.getElementById('saveBtn');
 const openOptionsBtn = document.getElementById('openOptionsBtn');
 
+function loadFolders() {
+    chrome.storage.local.get(['folders'], (data) => {
+        const folders = data.folders || {};
+        folderSelect.innerHTML = '';
+        const keys = Object.keys(folders);
+        if (keys.length === 0) {
+            // cria uma pasta padrão
+            folders['geral'] = [];
+            chrome.storage.local.set({ folders }, () => {
+                addOptionsToSelect(['geral']);
+            });
+        } else {
+            addOptionsToSelect(keys);
+        }
+    });
+}
