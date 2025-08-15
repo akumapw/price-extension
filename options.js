@@ -90,3 +90,42 @@ function renameFolder(oldName) {
         chrome.storage.local.set({ folders }, loadAll);
     });
 }
+
+addFolderBtn.addEventListener('click', () => addFolder(folderName.value));
+folderName.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') addFolder(folderName.value);
+});
+
+exportBtn.addEventListener('click', () => {
+    chrome.storage.local.get(['folders'], (data) => {
+        const json = JSON.stringify(data.folders || {}, null, 2);
+        const blob = new Blob([json], { type:
+            'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.download = 'pastas_price_organizer.json';
+        a.href = url;
+        a.click();
+        URL.revokeObjectURL(url);    
+    });
+});
+
+importBtn.addEventListener('click', () => importFile.click());
+importFile.addEventListener('change', async (e) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  const text = await file.text();
+  try {
+    const parsed = JSON.parse(text);
+    if (typeof parsed !== 'object' || Array.isArray(parsed)) {
+      throw new Error('Formato inválido');
+    }
+    chrome.storage.local.set({ folders: parsed }, loadAll);
+  } catch (err) {
+    alert('JSON inválido.');
+  } finally {
+    importFile.value = '';
+  }
+});
+
+document.addEventListener('DOMContentLoaded', loadAll);
