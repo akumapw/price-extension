@@ -110,3 +110,19 @@ urlInput.addEventListener('keydown', (e) => {
         saveLinkToFolder(url, folder);
     }
 });
+
+openOptionsBtn.addEventListener('click', () => {
+    chrome.runtime.openOptionsPage();
+});
+
+newFolderBtn.addEventListener('click', () => {
+    newFolderWrap.style.display = newFolderWrap.style.display === 'none' ? 'block' : 'none';
+    if (newFolderWrap.style.display === 'block')
+        newFolderInput.focus();
+});
+
+createFolderConfirm.addEventListener('click', () => {
+    createFolder(newFolderInput.value);
+});
+
+document.addEventListener('DOMContentLoaded', loadFolders);
