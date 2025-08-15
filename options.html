@@ -8,6 +8,18 @@
     <link rel="stylesheet" href="options.js" class="options">
 </head>
 <body>
-    
+    <h1>Suas Pastas</h1>
+
+    <div class="top">
+        <input id="folderName" type="text"
+        placeholder="Nova Pasta (ex: camisas)" />
+        <button id="addFolderBtn">Criar Pasta</button>
+        <button id="exportBtn">Exportar JSON</button>
+        <button id="importBtn">Importar JSON</button>
+        <input id="importFile" type="file" accept=".json"
+        style="display: none;" />
+    </div>
+
+    <div id="foldersWarp" class="grid"></div>
 </body>
 </html>
