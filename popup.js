@@ -56,3 +56,31 @@ function createFolder(name) {
     });
 }
 
+function saveLinkToFolder(url, folder) {
+    if (!url || !/^https?:\/\//i.test(url)) {
+        setMessage('Link Inválido.', 'error');
+        return;
+    }
+    chrome.storage.local.get(['folders'], (data) => {
+        const folders = data.folders || {};
+        const list = folders[folder] || [];
+
+        //evitar duplicação de link
+        if (list.some(item => item.url === url)) {
+            setMessage('Esse link já está nessa pasta.', 'error');
+            return;
+        }
+
+        const item = {
+            url,
+            title: '',
+            addedAt: Date.now()
+        };
+        list.push(item);
+        folders[folder] = list;
+        chrome.storage.local.set({ folders }, () => {
+            urlInput.value = '';
+            setMessage('link salvo!');
+        });
+    });
+}
