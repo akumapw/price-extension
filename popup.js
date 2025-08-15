@@ -1,3 +1,5 @@
+const urlInput = document.getElementById('urlInput');
+const folderSelect = document.getElementById('folderSelect');
 const pasteBtn = document.getElementById('pasteBtn');
 const saveBtn = document.getElementById('saveBtn');
 const openOptionsBtn = document.getElementById('openOptionsBtn');
@@ -130,8 +132,4 @@ createFolderConfirm.addEventListener('click', () => {
   createFolder(newFolderInput.value);
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-  const urlInput = document.getElementById('urlInput');
-  const folderSelect = document.getElementById('folderSelect');
-  loadFolders();
-});
+document.addEventListener('DOMContentLoaded', () => {loadFolders();});
