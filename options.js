@@ -66,3 +66,27 @@ function render(folders) {
         foldersWrap.appendChild(card);
     });
 }
+
+function addFolder(name) {
+    const n = (name || '').trim();
+    if (!n) return;
+    chrome.storage.local.get(['folders'], (data) => {
+        const folders = data.folders || {};
+        if (folders[n]) return alert('Essa Pasta Já Existe.');
+        folders[n] = [];
+        chrome.storage.local.set({ folders }, loadAll);
+    });
+}
+
+function renameFolder(oldName) {
+    const n = prompt('Novo nome de pasta:', oldName);
+    if (!n || m === oldName) return;
+    chrome.storage.local.get(['folders'], (data) => {
+        const folders = data.folders || {};
+        if (!folders[oldName]) return;
+        if (folders[n]) return alert('Já existe uma pasta com esse nome.');
+        folders[n] = folders[oldName];
+        delete folders[oldName];
+        chrome.storage.local.set({ folders }, loadAll);
+    });
+}
