@@ -84,3 +84,29 @@ function saveLinkToFolder(url, folder) {
         });
     });
 }
+
+pasteBtn.addEventListener('click', async () => {
+    try {
+        const text = await navigator.clipboard.readText();
+        if (!text) return setMessage('Clipboard vazio.', 'error');
+        urlInput.value = text;
+    } catch (e) {
+        setMessage('Não consegui ler o clipboard.', 'error');
+    }
+});
+
+saveBtn.addEventListener('click', () => {
+    const url = urlInput.value.trim();
+    const folder = folderSelect.value;
+    saveLinkToFolder(url, folder);
+});
+
+//quando aperta enter salva o link
+urlInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        const url = urlInput.value.trim();
+        const folder = folderSelect.value;
+        saveLinkToFolder(url, folder);
+    }
+});
