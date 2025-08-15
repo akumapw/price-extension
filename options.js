@@ -45,6 +45,24 @@ function render(folders) {
             });
         }
         
+        const actions = document.createElement('div');
+        actions.className = 'row';
+        const renameBtn = document.createElement('button');
+        renameBtn.textContent = 'Renomear Pasta';
+        renameBtn.addEventListener('click', () =>
+        renameFolder(name));
     
-    })
+        const delBtn = document.createElement('button');
+        delBtn.textContent = 'Excluir pasta';
+        delBtn.className = 'danger';
+        delBtn.addEventListener('click', () => deleteFolder(name));
+
+        actions.appendChild(renameBtn);
+        actions.appendChild(delBtn);
+
+        card.appendChild(h2);
+        card.appendChild(links);
+        card.appendChild(actions);
+        foldersWrap.appendChild(card);
+    });
 }
