@@ -1,45 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Best Price</title>
-    <link rel="stylesheet" href="popup.css" class="popup">
+  <meta charset="UTF-8" />
+  <title>Price Organizer</title>
+  <link rel="stylesheet" href="popup.css" class="popup">
 </head>
 <body>
-    <div class="container">
-        <h1 class="title" id="titulo">Best Price</h1>
-    </div>
+  <h1>Salvar produto</h1>
 
-    <h1>Save Product</h1>
+  <div class="row">
+    <input id="urlInput" type="text" placeholder="Cole o link do produto aqui" />
+    <button id="pasteBtn" title="Colar do clipboard">Colar</button>
+  </div>
 
-    <div class="row">
-        <input id="urlInput" type="text" 
-        placeholder="Cole o Link do Produto Aqui" />
-        <button id="pasteBtn" title="Cole do Clipboard">Colar</button>
-    </div>
+  <div class="row">
+    <select id="folderSelect"></select>
+    <button id="newFolderBtn" class="secondary" title="Criar nova pasta">+ Pasta</button>
+  </div>
 
-    <div class="row">
-        <select id="folderSelect"></select>
-        <button id="newFolderBtn" class="secondary"
-        title="Criar nova Pasta">+ Pasta</button>
-    </div>
+  <div id="newFolderWrap" class="new-folder">
+    <input id="newFolderInput" type="text" placeholder="Nome da nova pasta" />
+    <button id="createFolderConfirm" class="ok">Criar</button>
+  </div>
 
-    <div id="newFolderWrap" class="new-folder">
-        <input id="newFolderInput" type="text"
-        placeholder="Nome da Nova Pasta" />
-        <button id="createFolderConfirm"
-        class="ok">Criar</button>
-    </div>
+  <div class="row">
+    <button id="saveBtn" class="ok">Salvar</button>
+    <button id="openOptionsBtn" class="secondary" title="Ver suas pastas">Ver pastas</button>
+  </div>
 
-    <div class="row">
-        <button id="saveBtn" class="ok">Salvar</button>
-        <button id="openOptionsBtn" class="secondary"
-        title="Ver Minhas Pastas">Ver Pastas</button>
-    </div>
+  <div class="hint">Dica: cole o link e tecle Enter para salvar.</div>
+  <div id="feedback"></div>
 
-    <div class="hint">Dica: Cole O Link e Tecle Enter Para Salvar.</div>
-
-    <script src="popup.js"></script>
+  <script src="popup.js"></script>
 </body>
 </html>

@@ -1,26 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minhas Pastas</title>
-    <link rel="stylesheet" href="options.css" class="options">
+  <meta charset="UTF-8" />
+  <title>Minhas Pastas</title>
+  <link rel="stylesheet" href="options.css" class="options">
 </head>
 <body>
-    <h1>Suas Pastas</h1>
+  <h1>Suas pastas</h1>
 
-    <div class="top">
-        <input id="folderName" type="text"
-        placeholder="Nova Pasta (ex: camisas)" />
-        <button id="addFolderBtn">Criar Pasta</button>
-        <button id="exportBtn">Exportar JSON</button>
-        <button id="importBtn">Importar JSON</button>
-        <input id="importFile" type="file" accept=".json"
-        style="display: none;" />
-    </div>
+  <div class="top">
+    <input id="folderName" type="text" placeholder="Nova pasta (ex: camisas)" />
+    <button id="addFolderBtn">Criar pasta</button>
+    <button id="exportBtn">Exportar JSON</button>
+    <button id="importBtn">Importar JSON</button>
+    <input id="importFile" type="file" accept=".json" style="display:none" />
+  </div>
 
-    <div id="foldersWarp" class="grid"></div>
+  <div id="folersWarp" class="grid"></div>
 
-    <script src="options.js"></script>
+  <script src="options.js"></script>
 </body>
 </html>

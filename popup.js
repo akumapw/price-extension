@@ -5,7 +5,13 @@ const newFolderBtn = document.getElementById('newFolderBtn');
 const newFolderWrap = document.getElementById('newFolderWrap');
 const newFolderInput = document.getElementById('newFolderInput');
 const createFolderConfirm = document.getElementById('createFolderConfirm');
+const feedback = document.getElementById('feedback');
 
+function setMessage(msg, type = 'success') {
+  feedback.className = type === 'error' ? 'error' : 'success';
+  feedback.textContent = msg;
+  setTimeout(() => { feedback.textContent = ''; }, 2000);
+}
 
 function loadFolders() {
   chrome.storage.local.get(['folders'], (data) => {
