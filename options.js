@@ -21,7 +21,9 @@ function render(folders) {
     card.className = 'card';
 
     const h2 = document.createElement('h2');
-    h2.innerHTML = `<span>${name}</span><span class="pill">${items.length} itens</span>`;
+    const saleCount = items.filter(i => i.isOnSale).length;
+    const pillText = `${items.length} itens${saleCount ? ` • ${saleCount} em promoção` : ''}`;
+    h2.innerHTML = `<span>${name}</span><span class="pill">${pillText}</span>`;
 
     const links = document.createElement('div');
     links.className = 'links';
@@ -36,11 +38,39 @@ function render(folders) {
         .slice()
         .sort((a,b)=> (b.addedAt||0)-(a.addedAt||0))
         .forEach(item => {
+          const row = document.createElement('div');
+          row.className = 'item-row';
           const a = document.createElement('a');
           a.href = item.url;
           a.target = '_blank';
           a.rel = 'noopener';
           a.textContent = item.url;
+          
+          const priceWrap = document.createElem('span');
+          priceWrap.className = 'price-wrap';
+
+          if (Number.isFinite(item.lastPrice)) {
+            const p = document.createElement('span');
+            p.className = 'price';
+            p.textContent = formatBRL(item.lastPrice);
+            priceWrap.appendChild(p);
+          }
+          if (Number.isFinite(item.baselinePrice) && item.isOnSale) {
+            const base = document.createElement('span');
+            base.className = 'baseline';
+            base.textContent = formatBRL(item.baselinePrice);
+            priceWrap.appendChild(base);
+
+            const badge = document.createElement('span');
+            badge.className = 'badge-sale';
+            const pct = item.discountPct != null ? `${item.discountPct}%` : '';
+            badge.textContent = `Promo ${pct}`;
+            row.appendChild(badge);
+          }
+
+          row.appendChild(a);
+          if (priceWrap.childNodes.length) row.appendChild(priceWrap);
+          
           links.appendChild(a);
         });
     }

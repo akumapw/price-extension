@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Price Organizer",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Salva produtos que você quer comprar e assim que tiver descontos avisa para você.",
   "action": {
     "default_popup": "popup.html",
