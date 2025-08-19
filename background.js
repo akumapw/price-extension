@@ -104,3 +104,50 @@ async function scanAllFolders() {
   await chrome.action.setBadgeBackgroundColor({ color: "#d32f2f" });
 }
 
+async function ensureBaselineForUrls(urls) {
+  if (!urls.length) return;
+  const data = await chrome.storage.local.get(["folders"]);
+  const folders = data.folders || {};
+  let updated = false;
+
+  for (const list of Object.values(folders)) {
+    for (const item of list) {
+      if (urls.includes(item.url) && item.baselinePrice == null) {
+        const p = await fetchPrice(item.url).catch(() => null);
+        if (p != null) {
+          item.baselinePrice = p;
+          item.lastPrice = p;
+          item.isOnSale = false;
+          item.discountPct = 0;
+          item.lastCheckedAt = Date.now();
+          updated = true;
+        }
+      }
+    }
+  }
+  if (updated) await chrome.storage.local.set({ folders });
+}
+
+async function getAllItems() {
+  const { folders } = await chrome.storage.local.get(["folders"]);
+  const lists = Object.values(folders || {});
+  return lists.flat();
+}
+
+function notifySale(folderName, item, baseline, current) {
+  const diff = (baseline - current);
+  const pct = Math.max(0, Math.round(((baseline - current) / baseline) * 1000) / 10);
+
+  chrome.notifications.create({
+    type: "basic",
+    iconUrl: NOTIF_ICON,
+    title: "Promoção detectada!",
+    message: `Na pasta “${folderName}”: preço caiu ${pct}%.\nAgora: ${formatBRL(current)} (antes: ${formatBRL(baseline)})`,
+    priority: 1
+  }, (id) => {
+    // Clique abre o produto
+    chrome.notifications.onClicked.addListener((clickedId) => {
+      if (clickedId === id) chrome.tabs.create({ url: item.url });
+    });
+  });
+}
