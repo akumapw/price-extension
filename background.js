@@ -151,3 +151,60 @@ function notifySale(folderName, item, baseline, current) {
     });
   });
 }
+
+// ---------- Fetch + parsing de preços ----------
+
+async function fetchPrice(url) {
+  const res = await fetch(url, { cache: "no-store", credentials: "omit", mode: "cors" });
+  const html = await res.text();
+  const { price } = extractPrice(html) || {};
+  if (price == null || !Number.isFinite(price)) throw new Error("no-price");
+  return price;
+}
+
+// Tenta JSON-LD (schema.org), meta tags e padrões comuns
+function extractPrice(html) {
+  // 1) JSON-LD
+  const ldMatches = [...html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)];
+  for (const m of ldMatches) {
+    const block = m[1]?.trim();
+    if (!block) continue;
+    try {
+      const json = JSON.parse(sanitizeJson(block));
+      const objects = Array.isArray(json) ? json : [json];
+      for (const obj of objects) {
+        const p = pickPriceFromObject(obj);
+        if (p != null) return { price: p };
+      }
+    } catch { /* ignore */ }
+  }
+
+  // 2) OpenGraph product:price:amount
+  const og = html.match(/<meta[^>]+property=["']product:price:amount["'][^>]+content=["']([^"']+)["']/i);
+  if (og?.[1]) {
+    const p = parsePriceNum(og[1]);
+    if (p != null) return { price: p };
+  }
+
+  // 3) itemprop="price"
+  const mi = html.match(/<meta[^>]+itemprop=["']price["'][^>]+content=["']([^"']+)["']/i);
+  if (mi?.[1]) {
+    const p = parsePriceNum(mi[1]);
+    if (p != null) return { price: p };
+  }
+
+  // 4) heurística: procura R$ 123,45 / 123.45 em texto
+  const textOnly = html.replace(/\s+/g, " ");
+  const br = textOnly.match(/R\$\s*([\d\.]{1,3}(?:\.\d{3})*(?:,\d{2})|\d+,\d{2})/i);
+  if (br?.[1]) {
+    const p = parsePriceNum(br[1]);
+    if (p != null) return { price: p };
+  }
+  const intl = textOnly.match(/(?:^|[^\d])(\d{1,3}(?:[.,]\d{3})*(?:[.,]\d{2}))(?:[^\d]|$)/);
+  if (intl?.[1]) {
+    const p = parsePriceNum(intl[1]);
+    if (p != null) return { price: p };
+  }
+
+  return null;
+}
