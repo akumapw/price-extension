@@ -8,6 +8,7 @@ const newFolderWrap = document.getElementById('newFolderWrap');
 const newFolderInput = document.getElementById('newFolderInput');
 const createFolderConfirm = document.getElementById('createFolderConfirm');
 const feedback = document.getElementById('feedback');
+const salesWrap = document.getElementById('salesWrap');
 
 function setMessage(msg, type = 'success') {
   feedback.className = type === 'error' ? 'error' : 'success';
@@ -81,14 +82,19 @@ function saveLinkToFolder(url, folder) {
 
     const item = {
       url,
-      title: '',       // pode ser preenchido depois com content script ou options
+      title: '',       
       addedAt: Date.now()
+      // baseline/lastPrice preenchidos pelo background
     };
     list.push(item);
     folders[folder] = list;
-    chrome.storage.local.set({ folders }, () => {
+    chrome.storage.local.set({ folders }, async () => {
       urlInput.value = '';
       setMessage('Link salvo!');
+      // dispara precificação inicial ASAP
+      chrome.runtime.sendMessage({ type: 'TRACK_URLS', urls: [url] });
+      // e já atualiza lista de promoções
+      await loadSales();
     });
   });
 }
@@ -132,4 +138,39 @@ createFolderConfirm.addEventListener('click', () => {
   createFolder(newFolderInput.value);
 });
 
-document.addEventListener('DOMContentLoaded', () => {loadFolders();});
+document.addEventListener('DOMContentLoaded', async () => {
+  loadFolders();
+  await loadSales();
+});
+
+async function loadSales() {
+  salesWrap.innerHTML = '';
+  const { onSale } = await chrome.runtime.sendMessage({ type: 'GET_SALES_SUMMARY' }).catch(() => ({ onSale: [] }));
+  if (!onSale || onSale.length === 0) {
+    const none = document.createElement('div');
+    none.className = 'sale-item';
+    none.textContent = 'Sem promoções no momento.';
+    salesWrap.appendChild(none);
+    return;
+  }
+  onSale
+    .sort((a,b) => (b.discountPct||0) - (a.discountPct||0))
+    .slice(0, 10)
+    .forEach(it => {
+      const div = document.createElement('div');
+      div.className = 'sale-item';
+      div.innerHTML = `
+        <a href="${it.url}" target="_blank" rel="noopener">${it.url}</a>
+        <div class="sale-meta">
+          <span class="sale-pct">-${it.discountPct || 0}%</span>
+          <span>${fmt(it.lastPrice)} <span style="text-decoration:line-through; color:#888; margin-left:4px">${fmt(it.baselinePrice)}</span></span>
+        </div>
+      `;
+      salesWrap.appendChild(div);
+    });
+}
+
+function fmt(n) {
+  try { return Number(n).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
+  catch { return `R$ ${Number(n).toFixed(2)}`; }
+}
