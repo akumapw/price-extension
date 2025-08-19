@@ -39,3 +39,68 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   })();
   return true; // async
 });
+
+async function scanAllFolders() {
+  const data = await chrome.storage.local.get(["folders"]);
+  const folders = data.folders || {};
+
+  let updated = false;
+  let saleCount = 0;
+
+  for (const [folderName, list] of Object.entries(folders)) {
+    for (const item of list) {
+      // Garante baseline em itens novos
+      if (item.baselinePrice == null) {
+        const price = await fetchPrice(item.url).catch(() => null);
+        if (price != null) {
+          item.baselinePrice = price;
+          item.lastPrice = price;
+          item.currency = item.currency || "auto";
+          item.lastCheckedAt = Date.now();
+          item.isOnSale = false;
+          item.discountPct = 0;
+          updated = true;
+        }
+        continue;
+      }
+
+      // Já tem baseline → verificar desconto
+      const currentPrice = await fetchPrice(item.url).catch(() => null);
+      if (currentPrice == null) continue;
+
+      item.lastCheckedAt = Date.now();
+      const old = item.lastPrice ?? item.baselinePrice;
+      item.lastPrice = currentPrice;
+
+      const baseline = item.baselinePrice;
+      if (Number.isFinite(baseline) && currentPrice < baseline * (1 - DISCOUNT_THRESHOLD)) {
+        const pct = ((baseline - currentPrice) / baseline) * 100;
+        const wasOnSale = !!item.isOnSale;
+        item.isOnSale = true;
+        item.discountPct = Math.max(0, Math.round(pct * 10) / 10); // 1 casa
+        updated = true;
+
+        if (!wasOnSale) {
+          saleCount++;
+          notifySale(folderName, item, baseline, currentPrice);
+        }
+      } else {
+        // Sem desconto relevante
+        item.isOnSale = false;
+        item.discountPct = 0;
+        updated = true;
+      }
+    }
+  }
+
+  if (updated) {
+    await chrome.storage.local.set({ folders });
+  }
+
+  // Badge no ícone da extensão com total de itens em promoção
+  const all = await getAllItems();
+  const totalOnSale = all.filter(i => i.isOnSale).length;
+  await chrome.action.setBadgeText({ text: totalOnSale ? String(totalOnSale) : "" });
+  await chrome.action.setBadgeBackgroundColor({ color: "#d32f2f" });
+}
+
