@@ -208,3 +208,58 @@ function extractPrice(html) {
 
   return null;
 }
+
+function pickPriceFromObject(obj) {
+  if (!obj || typeof obj !== "object") return null;
+  // Product/offers
+  const offers = obj.offers || obj.offer;
+  if (offers) {
+    const arr = Array.isArray(offers) ? offers : [offers];
+    for (const o of arr) {
+      const cand = o.price ?? o.lowPrice ?? o.highPrice;
+      const p = parsePriceNum(cand);
+      if (p != null) return p;
+    }
+  }
+  // price direto
+  const direct = obj.price ?? obj.priceAmount ?? obj.currentPrice;
+  const p2 = parsePriceNum(direct);
+  if (p2 != null) return p2;
+
+  // nested
+  for (const v of Object.values(obj)) {
+    if (v && typeof v === "object") {
+      const nested = pickPriceFromObject(v);
+      if (nested != null) return nested;
+    }
+  }
+  return null;
+}
+
+function parsePriceNum(v) {
+  if (v == null) return null;
+  const s = String(v).trim();
+  if (!s) return null;
+  // Normaliza vírgula/ponto
+  const norm = s
+    .replace(/[^\d.,]/g, "")
+    .replace(/\.(?=\d{3}(\D|$))/g, "") // remove separador de milhar com ponto
+    .replace(",", ".");                // vírgula decimal -> ponto
+  const n = Number(norm);
+  return Number.isFinite(n) ? n : null;
+}
+
+function sanitizeJson(str) {
+  // remove comentários e vírgulas finais comuns em JSON-LD malformatado
+  return str
+    .replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, "")
+    .replace(/,\s*([}\]])/g, "$1");
+}
+
+function formatBRL(n) {
+  try {
+    return n.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 2 });
+  } catch {
+    return `R$ ${n.toFixed(2)}`;
+  }
+}
