@@ -2,11 +2,25 @@
   "manifest_version": 3,
   "name": "Price Organizer",
   "version": "1.0.0",
-  "description": "Salva links de produtos em pastas (camisas, tênis, etc).",
+  "description": "Salva produtos que você quer comprar e assim que tiver descontos avisa para você.",
   "action": {
     "default_popup": "popup.html",
     "default_title": "Price Organizer"
   },
   "options_page": "options.html",
-  "permissions": ["storage", "clipboardRead"]
-}
+
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  
+  "permissions": [
+  "storage", 
+  "clipboardRead",
+  "alarms",
+  "notifications"
+  ],
+  "host_permissions": [
+    "*://*/*"
+  ]
+ }
