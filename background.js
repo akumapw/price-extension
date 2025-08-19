@@ -11,3 +11,31 @@ chrome.runtime.onInstalled.addListener(() => {
   // primeira rodada em 30s pra já popular preços
   chrome.alarms.create("priceCheckFirst", { when: Date.now() + 30_000 });
 });
+
+// Ouve alarmes
+chrome.alarms.onAlarm.addListener(async (alarm) => {
+  if (alarm.name === "priceCheck" || alarm.name === "priceCheckFirst") {
+    await scanAllFolders();
+  }
+});
+
+// Menssagem com popup/options
+chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
+  (async () => {
+    if (msg?.type === "CHECK_NOW") {
+      await scanAllFolders();
+      sendResponse({ ok: true });
+    } else if (msg?.type === "GET_SALES_SUMMARY") {
+      const items = await getAllItems();
+      const onSale = items.filter(i => i.isOnSale && Number.isFinite(i.discountPct));
+      sendResponse({ onSale });
+    } else if (msg?.type === "TRACK_URLS") {
+      // Força precificação inicial dessas URLs (após salvar)
+      await ensureBaselineForUrls(msg.urls || []);
+      sendResponse({ ok: true });
+    } else {
+      sendResponse({ ok: false });
+    }
+  })();
+  return true; // async
+});
