@@ -69,9 +69,8 @@ function render(folders) {
           }
 
           row.appendChild(a);
-          if (priceWrap.childNodes.length) row.appendChild(priceWrap);
-          
-          links.appendChild(a);
+          if (priceWrap.childNodes.length) row.appendChild(priceWrap);  
+          links.appendChild(row);
         });
     }
 
@@ -86,8 +85,14 @@ function render(folders) {
     delBtn.className = 'danger';
     delBtn.addEventListener('click', () => deleteFolder(name));
 
+    const checkBtn = document.createElement('button');
+    checkBtn.textContent = 'Verificar promoções';
+    checkBtn.className = 'secondary';
+    checkBtn.addEventListener('click', () => chrome.runtime.sendMessage({ type: 'CHECK_NOW' }, loadAll));
+
     actions.appendChild(renameBtn);
     actions.appendChild(delBtn);
+    actions.appendChild(checkBtn);
 
     card.appendChild(h2);
     card.appendChild(links);
@@ -127,6 +132,14 @@ function deleteFolder(name) {
     delete folders[name];
     chrome.storage.local.set({ folders }, loadAll);
   });
+}
+
+function formatBRL(n) {
+  try {
+    return n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 2 });
+  } catch {
+    return `R$ ${Number(n).toFixed(2)}`;
+  }
 }
 
 addFolderBtn.addEventListener('click', () => addFolder(folderName.value));
