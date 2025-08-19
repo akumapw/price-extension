@@ -99,3 +99,38 @@ button.danger {
   border-radius: 999px;
   font-size: 12px;
 }
+
+.item-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0;
+  font-size: 13px;
+}
+
+.item-row a {
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.price {
+  font-weight: 600;
+  color: #333;
+}
+
+.baseline {
+  color: #888;
+  text-decoration: line-through;
+  margin-left: 4px;
+}
+
+.badge-sale {
+  background: #ffe8e6;
+  color: #c62828;
+  border: 1px solid #ffc1bd;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+}
