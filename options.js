@@ -46,7 +46,7 @@ function render(folders) {
           a.rel = 'noopener';
           a.textContent = item.url;
           
-          const priceWrap = document.createElem('span');
+          const priceWrap = document.createElement('span');
           priceWrap.className = 'price-wrap';
 
           if (Number.isFinite(item.lastPrice)) {
